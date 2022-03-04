@@ -52,7 +52,6 @@ for i = 1,pages do
         local server = data.Collection[i]
 
         if server.UserCanJoin then 
-          rconsoleprint('Server found on page '..i..'!\n')
           loadstring(server.JoinScript)()
           coroutine.yield()
           break 
