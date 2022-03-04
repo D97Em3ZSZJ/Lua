@@ -41,27 +41,29 @@ local function getPage(index : int)
   return http:JSONDecode(res.Body)
 end 
 
---// Looping through the pages and checking if the collection size is greater than 0 and if it is, then we use the last page  
-for i = 1,pages do 
-  coroutine.wrap(function() -- Dont judge me for this, it just takes too long to run through all of them individually.
-    local data = getPage(i)
+-- @ checkPage(1)
+-- @ returns void 
+local function checkPage(index : int)
+  local data = getPage(index)
 
-    if #data.Collection < 10 and #data.Collection > 0 then 
-      --// Loop backwards through the page and find the emptiest game that can be joined
-      for i = #data.Collection, 1, -1 do 
-        local server = data.Collection[i]
+  if #data.Collection < 10 and #data.Collection > 0 then 
+    --// Loop backwards through the page and find the emptiest game that can be joined
+    for i = #data.Collection, 1, -1 do 
+      local server = data.Collection[i]
 
-        if server.UserCanJoin then 
-          loadstring(server.JoinScript)()
-          coroutine.yield()
-          break 
-        end 
-
-      end
+      if server.UserCanJoin then 
+        loadstring(server.JoinScript)()
+        coroutine.yield()
+        break 
+      end 
 
     end
 
-  end)()
+  end
+end 
 
+--// Looping through the pages and checking if the collection size is greater than 0 and if it is, then we use the last page  
+for i = 1,pages do 
+  coroutine.wrap(checkPage)(i) -- Dont judge me for this, it just takes too long to run through all of them individually.
   task.wait()
 end 
